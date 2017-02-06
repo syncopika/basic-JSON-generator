@@ -1,6 +1,11 @@
+//TODO: editing previously added objects, deleting objects, and maybe uploading a json file 
+var count = 0; //keep track of number of key-value pairs for proper id labeling
+var currentObjEdit; //this will hold the number id of the object being edited 
+
 //important!! this is the array that will hold all the objects
 var JSONarray = [];
 
+//make new key-value pair
 function addNewPair(){
 	var options = document.getElementById('options');
 	
@@ -36,6 +41,7 @@ function addNewPair(){
 	latestOption.appendChild(newValue);
 }
 
+// add new object to JSONarray and display it on to the page
 function addToJSON(){
 	//look through all key-value pair children in #options
 	var children = document.getElementById('options').childNodes;
@@ -43,9 +49,7 @@ function addToJSON(){
 	
 	for(var i = 0; i < children.length; i++){
 		
-		if(children[i].className === "pair"){			
-			//get key 
-			
+		if(children[i].className === "pair"){				
 			//note!! these indices (the 3 and 1) are specific to this implementation. it seems like for children nodes,
 			//elements are separated by a 'text' node. so i.e. 
 			//for #pair, there is a div and a text area. but the child nodes for #pair are actually text, div, text, textarea. 
@@ -74,8 +78,8 @@ function addToJSON(){
 	JSONarray.push(JSON.stringify(newObject));
 	
 	//show new object in designated area
-	//console.log(newObject);
 	addObjectToDisplay(newObject);
+	count++;
 	
 	clearData();
 }
@@ -83,21 +87,18 @@ function addToJSON(){
 function clearData(){
 	var children = document.getElementById('options').childNodes;
 	
-	for(var i = 0; i < children.length; i++){
-		
+	for(var i = 0; i < children.length; i++){	
 		if(children[i].className === "pair"){
-		
 			for(var j = 0; j < children[i].childNodes.length; j++){
-				
 				if(children[i].childNodes[j].className === "keyArea"){
-					
+				/* don't clear the keys for a new object 
 					//clear key
 					if(i === 1){
 						(children[i].childNodes[j].childNodes[3]).value = '';
 					}else{
 						(children[i].childNodes[j].childNodes[1]).value = '';
 					}
-					
+				*/
 				}else if(children[i].childNodes[j].className === "value"){
 					//clear value
 					children[i].childNodes[j].value = '';
@@ -105,12 +106,17 @@ function clearData(){
 			}
 		}
 	}
+	hideSave();
 }
 
+// helper function to display an object on the page
 function addObjectToDisplay(object){
 	
 	var newObj = document.createElement("div");
+	newObj.id = count + "pair";
+	
 	var displayArea = document.getElementById("currentObjects");
+	
 	//append the new div first, then add the stuff inside
 	displayArea.appendChild(newObj);
 	
@@ -132,13 +138,25 @@ function addObjectToDisplay(object){
 	}
 	//add delete option
 	var del = document.createElement('p');
-	del.textContent = 'delete';
+	del.textContent = "delete";
 	del.className = "delete";
+	del.style.display = "inline-block";
 	latestObj.appendChild(del);
 	deleteObject(del);
 	
+	//add edit option 
+	var edit = document.createElement('p');
+	edit.textContent = "edit";
+	edit.className = "edit";
+	edit.style.display = "inline-block";
+	edit.style.padding = '0 0 0 8px';
+	edit.style.color = "#007f01";
+	latestObj.appendChild(edit);
+	editObject(edit);
+	
 	var breakLine = document.createElement('hr');
 	latestObj.appendChild(breakLine);
+
 }
 
 
@@ -183,7 +201,8 @@ function getJSON(){
 	link.click();
 }
 
-//allow deletion of an object - bind this to a click event on 'delete'
+// allow deletion of an object - bind this to a click event on 'delete'
+// dynamically adds a delete option
 function deleteObject(element){
 
 	element.addEventListener('click', function(e){
@@ -221,7 +240,116 @@ function deleteObject(element){
 		//then delete entry from #currentObjects
 		var nodeToDelete = document.getElementById("deleteTag");
 		parent.parentNode.removeChild(nodeToDelete);
+		count--;
 		
+		//now rename pair div ids so that their numbers correspond to their index in JSONarray
+		var pairIds = document.querySelectorAll("[id*='pair']");
+		for(var i = 0; i < pairIds.length; i++){
+			pairIds[i].id = i + 'pair';
+		}
+		//console.log(pairIds);
 	});
 
+}
+
+
+// be able to edit an existing object in the set
+// dynamically adds an edit option, just like deletteObject
+function editObject(element){
+
+	//display save? button
+	var saveButton = document.querySelector(".save");
+	
+	//this creates the edit option 
+	element.addEventListener('click', function(e){
+		
+		saveButton.style.display = "block";
+		
+		//these are the nodes that display the key-value pairs after the <hr> 
+		var siblings = element.parentNode.childNodes;
+		
+		//these are the nodes for the input text boxes
+		var inputArea = document.getElementById('options').childNodes;
+		
+		//tag the save button with the number of the current object being edited
+		currentObjEdit = parseInt(element.parentNode.id);
+		saveButton.id = currentObjEdit + "save";
+		
+		//remove any previous "editing # object..."
+		if(document.getElementById('whichObject')){
+			document.getElementById('whichObject').remove();
+		}
+		
+		//show user which object in JSONarray they are editing
+		var whichObject = document.createElement('p');
+		whichObject.id = 'whichObject';
+		whichObject.textContent = "now editing: object " + currentObjEdit + " ...";
+		var options = document.getElementById('options');
+		options.appendChild(whichObject);
+		
+		// indices 1 and 3 for inputs are the div pairs 
+		//indices 0 and 2 for the key to put in input ( 1 and 3 are the values to input)
+		for(var i = 1; i < inputArea.length; i+=2){
+			if(i === 1){
+				//extra child nodes again...
+				inputArea[i].childNodes[3].value = siblings[i].textContent; 
+			}else{
+				inputArea[i].childNodes[1].value = siblings[i].textContent; 
+			}
+		}
+	});
+}
+
+//save function
+function saveNewData(id){
+
+	var indexToEdit = parseInt(id);
+	console.log(indexToEdit);
+	//these are the input fields with the edited data
+	var children = document.getElementById('options').childNodes; 
+	
+	//edit the display with the new info
+	var infoDisplay = document.getElementById('currentObjects').childNodes;
+	var index = indexToEdit + 1; //offset by 1st text node in the above childNodes
+	var infoDisplayCounter = 0;
+	
+	//edit the object in JSONarray
+	for(var i = 0; i < children.length; i++){
+		
+		if(children[i].className === "pair"){			
+			var key;
+			var keyValue;
+			for(var j = 0; j < children[i].childNodes.length; j++){
+				if(children[i].childNodes[j].className === "keyArea"){
+					//get key
+					if(i === 1){
+						key = (children[i].childNodes[j].childNodes[3]).value;
+					}else{
+						key = (children[i].childNodes[j].childNodes[1]).value;
+					}
+				}else if(children[i].childNodes[j].className === "value"){
+					//get value
+					keyValue = children[i].childNodes[j].value;
+				}
+			}
+			var tempObject = JSON.parse(JSONarray[indexToEdit]);
+			tempObject[key] = keyValue;
+			JSONarray[indexToEdit] = JSON.stringify(tempObject);
+			
+			//edit displayed info
+			infoDisplay[index].childNodes[infoDisplayCounter*2].textContent = key;
+			infoDisplay[index].childNodes[infoDisplayCounter*2 + 1].textContent = keyValue;
+			infoDisplayCounter++;
+		}
+	}
+}
+
+//hide save button
+function hideSave(){
+	var save = document.querySelector('.save');
+	save.style.display = 'none';
+	
+	if(document.getElementById('whichObject')){
+		document.getElementById('whichObject').remove();
+	}
 }
