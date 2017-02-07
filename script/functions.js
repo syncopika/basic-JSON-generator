@@ -1,5 +1,5 @@
-//TODO: editing previously added objects, deleting objects, and maybe uploading a json file 
-var count = 0; //keep track of number of key-value pairs for proper id labeling
+//TODO: option for uploading a json file 
+var count = 0;
 var currentObjEdit; //this will hold the number id of the object being edited 
 
 //important!! this is the array that will hold all the objects
@@ -41,7 +41,6 @@ function addNewPair(){
 	latestOption.appendChild(newValue);
 }
 
-// add new object to JSONarray and display it on to the page
 function addToJSON(){
 	//look through all key-value pair children in #options
 	var children = document.getElementById('options').childNodes;
@@ -49,7 +48,9 @@ function addToJSON(){
 	
 	for(var i = 0; i < children.length; i++){
 		
-		if(children[i].className === "pair"){				
+		if(children[i].className === "pair"){			
+			//get key 
+			
 			//note!! these indices (the 3 and 1) are specific to this implementation. it seems like for children nodes,
 			//elements are separated by a 'text' node. so i.e. 
 			//for #pair, there is a div and a text area. but the child nodes for #pair are actually text, div, text, textarea. 
@@ -78,6 +79,7 @@ function addToJSON(){
 	JSONarray.push(JSON.stringify(newObject));
 	
 	//show new object in designated area
+	//console.log(newObject);
 	addObjectToDisplay(newObject);
 	count++;
 	
@@ -109,7 +111,6 @@ function clearData(){
 	hideSave();
 }
 
-// helper function to display an object on the page
 function addObjectToDisplay(object){
 	
 	var newObj = document.createElement("div");
@@ -225,8 +226,6 @@ function deleteObject(element){
 			}
 		}
 		
-		///console.log(keyToFind);
-		//console.log(valueToFind);
 		//find and delete in JSONarray
 		for(var j = 0; j < JSONarray.length; j++){
 			var match1 = JSONarray[j].match(keyToFind) !== null;
@@ -287,16 +286,23 @@ function editObject(element){
 		var options = document.getElementById('options');
 		options.appendChild(whichObject);
 		
-		// indices 1 and 3 for inputs are the div pairs 
-		//indices 0 and 2 for the key to put in input ( 1 and 3 are the values to input)
-		for(var i = 1; i < inputArea.length; i+=2){
-			if(i === 1){
+		//need a counter here because the siblings array is arranged differently from inputArea array
+		var siblingsCounter = 1; 
+		
+		for(var i = 1; i < inputArea.length; i++){
+			
+			//make sure a div.pair is being targeted (sometimes a text node appears)
+			var validPair = (inputArea[i].className === "pair");
+	
+			if(i === 1 && validPair){
 				//extra child nodes again...
-				inputArea[i].childNodes[3].value = siblings[i].textContent; 
-			}else{
-				inputArea[i].childNodes[1].value = siblings[i].textContent; 
+				inputArea[i].childNodes[3].value = siblings[siblingsCounter].textContent; 
+				siblingsCounter += 2;
+			}else if(validPair){
+				inputArea[i].childNodes[1].value = siblings[siblingsCounter].textContent; 
+				siblingsCounter += 2;
 			}
-		}
+		}	
 	});
 }
 
