@@ -452,6 +452,12 @@ function saveNewData(id){
 			infoDisplayCounter++;
 		}
 	}
+	
+	//remove any previous "editing # object..."
+	if(document.getElementById('whichObject')){
+		document.getElementById('whichObject').remove();
+	}
+	
 }
 
 //hide save button
