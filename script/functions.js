@@ -310,7 +310,7 @@ function editObject(element){
 function saveNewData(id){
 
 	var indexToEdit = parseInt(id);
-	console.log(indexToEdit);
+	//console.log(indexToEdit);
 	//these are the input fields with the edited data
 	var children = document.getElementById('options').childNodes; 
 	
@@ -348,6 +348,9 @@ function saveNewData(id){
 			infoDisplayCounter++;
 		}
 	}
+	
+	// hide the save button after editing 
+	hideSave();
 }
 
 //hide save button
