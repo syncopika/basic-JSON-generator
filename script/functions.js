@@ -1,4 +1,5 @@
-//TODO: option for uploading a json file 
+// TODO: option for uploading a json file 
+
 var count = 0;
 var currentObjEdit; //this will hold the number id of the object being edited 
 
@@ -41,6 +42,11 @@ function addNewPair(){
 	latestOption.appendChild(newValue);
 }
 
+/***
+
+	takes the input for the key and value text areas and adds the key-value pairs to the JSON object 
+
+***/
 function addToJSON(){
 	//look through all key-value pair children in #options
 	var children = document.getElementById('options').childNodes;
@@ -49,15 +55,16 @@ function addToJSON(){
 	for(var i = 0; i < children.length; i++){
 		
 		if(children[i].className === "pair"){			
-			//get key 
-			
-			//note!! these indices (the 3 and 1) are specific to this implementation. it seems like for children nodes,
-			//elements are separated by a 'text' node. so i.e. 
-			//for #pair, there is a div and a text area. but the child nodes for #pair are actually text, div, text, textarea. 
-			//(this seems only true for the first div though!! :/)
+
+			// note!! these indices (the 3 and 1) are specific to this implementation. it seems like for children nodes,
+			// elements are separated by a 'text' node. so i.e. 
+			// for #pair, there is a div and a text area. but the child nodes for #pair are actually text, div, text, textarea. 
+			// this is only true for the first div though because every other pair is inserted into the DOM dynamically! see this:
+			// https://stackoverflow.com/questions/24589908/childnode-of-li-element-gives-text-ul-ul-text
 			var key;
 			var keyValue;
 			for(var j = 0; j < children[i].childNodes.length; j++){
+
 				if(children[i].childNodes[j].className === "keyArea"){
 					
 					//get key
@@ -79,10 +86,10 @@ function addToJSON(){
 	JSONarray.push(JSON.stringify(newObject));
 	
 	//show new object in designated area
-	//console.log(newObject);
 	addObjectToDisplay(newObject);
 	count++;
 	
+	//console.log(newObject);
 	clearData();
 }
 
@@ -93,7 +100,7 @@ function clearData(){
 		if(children[i].className === "pair"){
 			for(var j = 0; j < children[i].childNodes.length; j++){
 				if(children[i].childNodes[j].className === "keyArea"){
-				/* don't clear the keys for a new object 
+				/* don't clear the keys for a new object?
 					//clear key
 					if(i === 1){
 						(children[i].childNodes[j].childNodes[3]).value = '';
