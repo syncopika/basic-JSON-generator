@@ -48,6 +48,25 @@ function addNewPair(){
 
 ***/
 function addToJSON(){
+	
+	// prevent adding a blank object!
+	// if any fields are blank, simply return and don't do anything 
+	// for input elements, skip the first one since it's for naming the file to save
+	// the rest will correspond to key names 
+	// also check all textarea elements since these are the values for each key 
+	var allInputElements = document.getElementsByTagName("input");
+	for(var i = 1; i < allInputElements.length; i++){
+		if(allInputElements[i].value === ""){
+			return;
+		}
+	}
+	var allTextareaElements = document.getElementsByTagName("textarea");
+	for(var j = 0; j < allTextareaElements.length; j++){
+		if(allTextareaElements[j].value === ""){
+			return;
+		}
+	}
+	
 	//look through all key-value pair children in #options
 	var children = document.getElementById('options').childNodes;
 	var newObject = {};
