@@ -1,12 +1,12 @@
 // TODO: option for uploading a json file 
 
 var count = 0;
-var currentObjEdit; //this will hold the number id of the object being edited 
+var currentObjEdit; // This will hold the number id of the object being edited 
 
-//important!! this is the array that will hold all the objects
+// Important!! this is the array that will hold all the objects
 var JSONarray = [];
 
-//make new key-value pair
+// Make new key-value pair
 function addNewPair(){
 	var options = document.getElementById('options');
 	
@@ -63,15 +63,15 @@ function addNewPair(){
 
 ***/
 function addToJSON(){
-	// prevent adding a blank object!
+	// Prevent adding a blank object!
 	// if any key fields are blank, simply return and don't do anything 
 	// for input elements, skip the first one since it's for naming the file to save
 	// the rest will correspond to key names 
 	// it's okay to allow for values to be empty
 
-	var allInputElements = document.querySelectorAll(".aside__textInput");
-	for(var i = 1; i < allInputElements.length; i++){
-		if(allInputElements[i].value === ""){
+	var asideInputElements = document.querySelectorAll(".aside__textInput");
+	for(var i = 1; i < asideInputElements.length; i++){
+		if(asideInputElements[i].value === ""){
 			alert("All input should have a value");
 			return;
 		}
@@ -125,18 +125,14 @@ function clearData(){
 	for(var i = 0; i < children.length; i++){	
 		if(children[i].className === "aside__pair pair"){
 			for(var j = 0; j < children[i].childNodes.length; j++){
-				// if(children[i].childNodes[j].className === "keyArea"){
-				// // don't clear the keys for a new object?
-				// 	//clear key
-				// 	if(i === 1){
-				// 		(children[i].childNodes[j].childNodes[3]).value = '';
-				// 	}else{
-				// 		(children[i].childNodes[j].childNodes[1]).value = '';
-				// 	}
+				// if (children[i].childNodes[j].className === "keyArea"){
+				// 	// Clear key
+				// 	key = children[i].childNodes[j].querySelector('.aside__textInput.key').value;
+				// } 
 				
 				// }
 				if(children[i].childNodes[j].className === "valueArea"){
-					//clear value
+					// Clear value
 					children[i].childNodes[j].querySelector('.aside__textInput.value').value = '';
 				}
 			}
@@ -197,8 +193,8 @@ function addObjectToDisplay(object){
 }
 
 
-//this code allows the 'keys' to be clickable, and to display their corresponding values when clicked.
-//this is needed in the "current objects in JSON" area
+// this code allows the 'keys' to be clickable, and to display their corresponding values when clicked.
+// this is needed in the "current objects in JSON" area
 function attachClickHandler(element){
 	element.addEventListener("click", function(e){
 		if(element.nextSibling.className === 'theValue hidden'){
@@ -220,40 +216,40 @@ function getJSON(){
 		return;
 	}
 	
-	//edit the JSONarray a bit to format it nicely for the json document
+	// Edit the JSONarray a bit to format it nicely for the json document
 	var newArr = "[\n"; //add an opening square bracket and newline
 	newArr += JSONarray.join(",\n"); //line break after each object in the array
 	newArr += "\n]";
 	
-	//make blob from JSONarray
+	// Make blob from JSONarray
 	var blob = new Blob([newArr], {type: "application/json"});
-	//make a url for that blob
+	// Make a url for that blob
 	var url = URL.createObjectURL(blob);
 	
 	var link = document.createElement('a');
 	link.href = url; //link the a element to the blob's url
 	link.download = fileName + ".json";
 	
-	//then simulate a click to the blob url to initiate download
+	// Then simulate a click to the blob url to initiate download
 	link.click();
 }
 
-// allow deletion of an object - bind this to a click event on 'delete'
+// Allow deletion of an object - bind this to a click event on 'delete'
 // dynamically adds a delete option
 function deleteObject(element){
 
 	element.addEventListener('click', function(e){
-		//get the parent node and tag it for deletion
+		// Get the parent node and tag it for deletion
 		var parent = element.parentElement.parentElement;
 		parent.id = "deleteTag";
 		
-		//look at the text content for the sibling elements and find
-		//the match in the JSONarray
+		// Look at the text content for the sibling elements and find
+		// The match in the JSONarray
 		var siblings = element.parentNode.childNodes;
 		var keyToFind;
 		var valueToFind;
 		
-		//subtract 1 to account for the 'delete' element 
+		// Subtract 1 to account for the 'delete' element 
 		for(var i = 0; i < siblings.length - 1; i++){
 			if(siblings[i].className === "theKey"){
 				keyToFind = siblings[i].textContent;
@@ -262,7 +258,7 @@ function deleteObject(element){
 			}
 		}
 		
-		//find and delete in JSONarray
+		// Find and delete in JSONarray
 		for(var j = 0; j < JSONarray.length; j++){
 			var match1 = JSONarray[j].match(keyToFind) !== null;
 			var match2 = JSONarray[j].match(valueToFind) !== null;
@@ -272,66 +268,65 @@ function deleteObject(element){
 			}
 		}
 		
-		//then delete entry from #currentObjects
+		// Then delete entry from #currentObjects
 		var nodeToDelete = document.getElementById("deleteTag");
 		parent.parentNode.removeChild(nodeToDelete);
 		count--;
 		
-		//now rename pair div ids so that their numbers correspond to their index in JSONarray
+		// Now rename pair div ids so that their numbers correspond to their index in JSONarray
 		var pairIds = document.querySelectorAll("[id*='pair']");
 		for(var i = 0; i < pairIds.length; i++){
 			pairIds[i].id = i + 'pair';
 		}
-		//console.log(pairIds);
 	});
 
 }
 
 
-// be able to edit an existing object in the set
+// Be able to edit an existing object in the set
 // dynamically adds an edit option, just like deletteObject
 function editObject(element){
 
-	//display save? button
+	// Display save? button
 	var saveButton = document.querySelector(".save");
 	
-	//this creates the edit option 
+	// This creates the edit option 
 	element.addEventListener('click', function(e){
 		
 		saveButton.style.display = "block";
 		
-		//these are the nodes that display the key-value pairs after the <hr> 
+		// These are the nodes that display the key-value pairs after the <hr> 
 		var siblings = element.parentNode.childNodes;
 		
-		//these are the nodes for the input text boxes
+		// These are the nodes for the input text boxes
 		var inputArea = document.getElementById('options').childNodes;
 		
-		//tag the save button with the number of the current object being edited
+		// Tag the save button with the number of the current object being edited
 		currentObjEdit = parseInt(element.parentNode.parentNode.id);
 		saveButton.id = currentObjEdit + "save";
 		
-		//remove any previous "editing # object..."
+		// Remove any previous "editing # object..."
 		if(document.getElementById('whichObject')){
 			document.getElementById('whichObject').remove();
 		}
 		
-		//show user which object in JSONarray they are editing
+		// Show user which object in JSONarray they are editing
 		var whichObject = document.createElement('p');
 		whichObject.id = 'whichObject';
 		whichObject.textContent = "now editing: object " + currentObjEdit + " ...";
 		var options = document.getElementById('options');
 		options.appendChild(whichObject);
 		
-		//need a counter here because the siblings array is arranged differently from inputArea array
+		// Need a counter here because the siblings array is arranged differently from inputArea array
 		var siblingsCounter = 1; 
 		
 		for(var i = 1; i < inputArea.length; i++){
 			
-			//make sure a div.pair is being targeted (sometimes a text node appears)
+			// Make sure a div.pair is being targeted (sometimes a text node appears)
 			var validPair = (inputArea[i].className === "aside__pair pair");
 	
 			if(i === 1 && validPair){
-				//extra child nodes again...
+				// Extra child nodes again...
 				inputArea[i].childNodes[3].value = siblings[siblingsCounter].textContent; 
 				siblingsCounter += 2;
 			}else if(validPair){
@@ -342,33 +337,31 @@ function editObject(element){
 	});
 }
 
-//save function
+// Save function
 function saveNewData(id){
 
 	var indexToEdit = parseInt(id);
-	//console.log(indexToEdit);
-	//these are the input fields with the edited data
+	// Console.log(indexToEdit);
+	// These are the input fields with the edited data
 	var children = document.getElementById('options').childNodes; 
 	
-	//edit the display with the new info
+	// Edit the display with the new info
 	var infoDisplay = document.getElementById('currentObjects').childNodes;
 	var index = indexToEdit; //offset by 1st text node in the above childNodes
 	var infoDisplayCounter = 0;
 	
-	//edit the object in JSONarray
+	// Edit the object in JSONarray
 	for (var i = 0; i < children.length; i++) {
 		var key;
 		var value;
 		if (children[i].className === "aside__pair pair") {
 			for (var j = 0; j < children[i].childNodes.length; j++) {
 				if (children[i].childNodes[j].className === "keyArea") {
-					//get key
-					console.log("Imong mama");
+					// Get key
 					key = children[i].childNodes[j].querySelector('.aside__textInput.key').value;
-					console.log(key);
 				}
 				if(children[i].childNodes[j].className === "valueArea"){
-					//get value
+					// Get value
 					value = children[i].childNodes[j].querySelector('.aside__textInput.value').value;
 				}
 			}
@@ -376,18 +369,18 @@ function saveNewData(id){
 			tempObject[key] = value;
 			JSONarray[indexToEdit] = JSON.stringify(tempObject);
 			
-			//edit displayed info
+			// Edit displayed info
 			infoDisplay[index].childNodes[infoDisplayCounter*2].textContent = key;
 			infoDisplay[index].childNodes[infoDisplayCounter*2 + 1].textContent = value;
 			infoDisplayCounter++;
 		}
 	}
 	
-	// hide the save button after editing 
+	// Hide the save button after editing 
 	hideSave();
 }
 
-//hide save button
+// Hide save button
 function hideSave(){
 	var save = document.querySelector('.save');
 	save.style.display = 'none';
