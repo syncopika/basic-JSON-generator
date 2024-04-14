@@ -10,37 +10,52 @@ var JSONarray = [];
 function addNewPair(){
 	var options = document.getElementById('options');
 	
-	//create new pair
+	// Create new pair
 	var pair = document.createElement('div');
-	pair.className = "pair";
+	pair.className = "aside__pair pair";
+	options.appendChild(pair); // Append new pair to #options
+	var latestOption = options.childNodes[options.childNodes.length-1]; // Now get that new #pair div
 	
-	//append new pair to #options
-	options.appendChild(pair);
-	
-	//now get that new #pair div
-	var latestOption = options.childNodes[options.childNodes.length-1];
-	
+	// Create key area
 	var pairKey = document.createElement('div');
 	pairKey.className = 'keyArea';
 	
-	//add new label for pairKey, as well as a new input
-	var newLabel = document.createElement('label');
-	newLabel.textContent = 'key name: ';
+	// Add new label for pairKey, as well as a new input
+	var newKeyLabel = document.createElement('label');
+	newKeyLabel.textContent = 'key: ';
 	
 	latestOption.appendChild(pairKey);
-	latestOption.childNodes[0].appendChild(newLabel);
+	latestOption.childNodes[0].appendChild(newKeyLabel);
 	
-	//append new input text
+	// Append new input text for key
 	var newInput = document.createElement('input');
-	newInput.className = "key";
+	newInput.className = "aside__textInput key";
 	newInput.type = "text";
+	newInput.placeholder = "key";
 	latestOption.childNodes[0].appendChild(newInput);
 	
-	//append newValue (textarea) to .keyArea
-	var newValue = document.createElement('textarea');
-	newValue.className = "value";
-	latestOption.appendChild(newValue);
+	// Create value area
+	var valueArea = document.createElement('div');
+	valueArea.className = 'valueArea';
+	
+	// Add new label for valueArea, as well as a new input
+	var newValueLabel = document.createElement('label');
+	newValueLabel.textContent = 'value: ';
+
+	// Append value label to value area
+	valueArea.appendChild(newValueLabel);
+	
+	// Append value area
+	latestOption.appendChild(valueArea);
+
+	// Append new input text for value
+	var newValue = document.createElement('input');
+	newValue.className = "aside__textInput value";
+	newValue.placeholder = "value";
+	valueArea.appendChild(newValue);
 }
+
+
 
 /***
 
@@ -48,82 +63,81 @@ function addNewPair(){
 
 ***/
 function addToJSON(){
-	
 	// prevent adding a blank object!
 	// if any key fields are blank, simply return and don't do anything 
 	// for input elements, skip the first one since it's for naming the file to save
 	// the rest will correspond to key names 
 	// it's okay to allow for values to be empty
-	var allInputElements = document.getElementsByTagName("input");
+
+	var allInputElements = document.querySelectorAll(".aside__textInput");
 	for(var i = 1; i < allInputElements.length; i++){
 		if(allInputElements[i].value === ""){
+			alert("All input should have a value");
 			return;
 		}
 	}
-	
-	//look through all key-value pair children in #options
+
+	// Look through all key-value pair children in #options
 	var children = document.getElementById('options').childNodes;
 	var newObject = {};
-	
-	for(var i = 0; i < children.length; i++){
-		
-		if(children[i].className === "pair"){			
 
+	for (var i = 0; i < children.length; i++) {
+		var key;
+		var value;
+		if (children[i].className === "aside__pair pair") { 
 			// note!! these indices (the 3 and 1) are specific to this implementation. it seems like for children nodes,
 			// elements are separated by a 'text' node. so i.e. 
 			// for #pair, there is a div and a text area. but the child nodes for #pair are actually text, div, text, textarea. 
 			// this is only true for the first div though because every other pair is inserted into the DOM dynamically! see this:
-			// https://stackoverflow.com/questions/24589908/childnode-of-li-element-gives-text-ul-ul-text
-			var key;
-			var keyValue;
+			// https://stackoverflow.com/questions/24589908/childnode-of-li-element-gives-text-ul-ul-text           
+			
+			
 			for(var j = 0; j < children[i].childNodes.length; j++){
-
-				if(children[i].childNodes[j].className === "keyArea"){
-					
-					//get key
-					if(i === 1){
-						key = (children[i].childNodes[j].childNodes[3]).value;
-					}else{
-						key = (children[i].childNodes[j].childNodes[1]).value;
-					}
-				
-				}else if(children[i].childNodes[j].className === "value"){
-					//get value
-					keyValue = children[i].childNodes[j].value;
+				if (children[i].childNodes[j].className === "keyArea"){
+					// Get key
+					key = children[i].childNodes[j].querySelector('.aside__textInput.key').value;
+					// console.log("Key:", key);
+				} 
+				if(children[i].childNodes[j].className === "valueArea"){
+					// Get value
+					value = children[i].childNodes[j].querySelector('.aside__textInput.value').value;
+					// console.log("Value:", value);
 				}
 			}
-			newObject[key] = keyValue;
+			newObject[key] = value;
 		}
 	}
-	//important to stringify here!
-	JSONarray.push(JSON.stringify(newObject));
+	console.log({	newObject	});
 	
-	//show new object in designated area
+	// Push new object as a string to JSONarray
+	JSONarray.push(JSON.stringify(newObject));
+	// Show new object in designated area
 	addObjectToDisplay(newObject);
 	count++;
-	
-	//console.log(newObject);
+	// Clear data
 	clearData();
 }
+
 
 function clearData(){
 	var children = document.getElementById('options').childNodes;
 	
 	for(var i = 0; i < children.length; i++){	
-		if(children[i].className === "pair"){
+		if(children[i].className === "aside__pair pair"){
 			for(var j = 0; j < children[i].childNodes.length; j++){
-				if(children[i].childNodes[j].className === "keyArea"){
-				/* don't clear the keys for a new object?
-					//clear key
-					if(i === 1){
-						(children[i].childNodes[j].childNodes[3]).value = '';
-					}else{
-						(children[i].childNodes[j].childNodes[1]).value = '';
-					}
-				*/
-				}else if(children[i].childNodes[j].className === "value"){
+				// if(children[i].childNodes[j].className === "keyArea"){
+				// // don't clear the keys for a new object?
+				// 	//clear key
+				// 	if(i === 1){
+				// 		(children[i].childNodes[j].childNodes[3]).value = '';
+				// 	}else{
+				// 		(children[i].childNodes[j].childNodes[1]).value = '';
+				// 	}
+				
+				// }
+				if(children[i].childNodes[j].className === "valueArea"){
 					//clear value
-					children[i].childNodes[j].value = '';
+					children[i].childNodes[j].querySelector('.aside__textInput.value').value = '';
 				}
 			}
 		}
@@ -132,11 +146,10 @@ function clearData(){
 }
 
 function addObjectToDisplay(object){
-	
-	var newObj = document.createElement("div");
-	newObj.id = count + "pair";
-	
 	var displayArea = document.getElementById("currentObjects");
+	var newObj = document.createElement("div");
+	newObj.className = "jsonObjects";
+	newObj.id = count + "pair";
 	
 	//append the new div first, then add the stuff inside
 	displayArea.appendChild(newObj);
@@ -157,27 +170,30 @@ function addObjectToDisplay(object){
 		latestObj.appendChild(key);
 		latestObj.appendChild(keyValue);
 	}
-	//add delete option
+
+	// Add a container div for edit and delete buttons
+	var buttonsContainer = document.createElement('div');
+	buttonsContainer.className = "buttonsContainer";
+	latestObj.appendChild(buttonsContainer);
+
+	// Add delete button
 	var del = document.createElement('p');
-	del.textContent = "delete";
+	del.textContent = "Delete";
 	del.className = "delete";
 	del.style.display = "inline-block";
-	latestObj.appendChild(del);
+	buttonsContainer.appendChild(del);
 	deleteObject(del);
 	
-	//add edit option 
+	// Add edit button 
 	var edit = document.createElement('p');
-	edit.textContent = "edit";
+	edit.textContent = "Edit";
 	edit.className = "edit";
 	edit.style.display = "inline-block";
-	edit.style.padding = '0 0 0 8px';
-	edit.style.color = "#007f01";
-	latestObj.appendChild(edit);
+	buttonsContainer.appendChild(edit);
 	editObject(edit);
 	
 	var breakLine = document.createElement('hr');
 	latestObj.appendChild(breakLine);
-
 }
 
 
@@ -228,7 +244,7 @@ function deleteObject(element){
 
 	element.addEventListener('click', function(e){
 		//get the parent node and tag it for deletion
-		var parent = element.parentElement;
+		var parent = element.parentElement.parentElement;
 		parent.id = "deleteTag";
 		
 		//look at the text content for the sibling elements and find
@@ -291,7 +307,7 @@ function editObject(element){
 		var inputArea = document.getElementById('options').childNodes;
 		
 		//tag the save button with the number of the current object being edited
-		currentObjEdit = parseInt(element.parentNode.id);
+		currentObjEdit = parseInt(element.parentNode.parentNode.id);
 		saveButton.id = currentObjEdit + "save";
 		
 		//remove any previous "editing # object..."
@@ -312,7 +328,7 @@ function editObject(element){
 		for(var i = 1; i < inputArea.length; i++){
 			
 			//make sure a div.pair is being targeted (sometimes a text node appears)
-			var validPair = (inputArea[i].className === "pair");
+			var validPair = (inputArea[i].className === "aside__pair pair");
 	
 			if(i === 1 && validPair){
 				//extra child nodes again...
@@ -336,35 +352,33 @@ function saveNewData(id){
 	
 	//edit the display with the new info
 	var infoDisplay = document.getElementById('currentObjects').childNodes;
-	var index = indexToEdit + 1; //offset by 1st text node in the above childNodes
+	var index = indexToEdit; //offset by 1st text node in the above childNodes
 	var infoDisplayCounter = 0;
 	
 	//edit the object in JSONarray
-	for(var i = 0; i < children.length; i++){
-		
-		if(children[i].className === "pair"){			
-			var key;
-			var keyValue;
-			for(var j = 0; j < children[i].childNodes.length; j++){
-				if(children[i].childNodes[j].className === "keyArea"){
+	for (var i = 0; i < children.length; i++) {
+		var key;
+		var value;
+		if (children[i].className === "aside__pair pair") {
+			for (var j = 0; j < children[i].childNodes.length; j++) {
+				if (children[i].childNodes[j].className === "keyArea") {
 					//get key
-					if(i === 1){
-						key = (children[i].childNodes[j].childNodes[3]).value;
-					}else{
-						key = (children[i].childNodes[j].childNodes[1]).value;
-					}
-				}else if(children[i].childNodes[j].className === "value"){
+					console.log("Imong mama");
+					key = children[i].childNodes[j].querySelector('.aside__textInput.key').value;
+					console.log(key);
+				}
+				if(children[i].childNodes[j].className === "valueArea"){
 					//get value
-					keyValue = children[i].childNodes[j].value;
+					value = children[i].childNodes[j].querySelector('.aside__textInput.value').value;
 				}
 			}
 			var tempObject = JSON.parse(JSONarray[indexToEdit]);
-			tempObject[key] = keyValue;
+			tempObject[key] = value;
 			JSONarray[indexToEdit] = JSON.stringify(tempObject);
 			
 			//edit displayed info
 			infoDisplay[index].childNodes[infoDisplayCounter*2].textContent = key;
-			infoDisplay[index].childNodes[infoDisplayCounter*2 + 1].textContent = keyValue;
+			infoDisplay[index].childNodes[infoDisplayCounter*2 + 1].textContent = value;
 			infoDisplayCounter++;
 		}
 	}

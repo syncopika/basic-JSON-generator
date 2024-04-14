@@ -1,106 +1,66 @@
 <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Welcome to the basic JSON generator tool. Easily create simple JSON files with multiple key-value pairs. No need to worry about formatting – just add your data and download your JSON file. Try it now!">
+		<meta name="keywords" content="json, json generator, json maker, generator, maker, basic json generator, basic json maker">
+		<meta name="author" content="syncopika - Nicholas H.">
+		<meta property="og:url" content="https://syncopika.github.io/basic-JSON-generator/">
+		<link rel="stylesheet" href="index.css">
+		<link rel="stylesheet" href="utils.css">
+		<script src="functions.js"></script>
+		<title> Basic JSON Generator </title>
+	</head>
+	<body>
 
-<html>
-
-<head>
-	<meta charset='UTF-8'>
-	<script src="functions.js"></script>
-	<title> basic JSON generator </title>
-</head>
-
-<style>
-.pair{
-	margin-top: 2%;
-}
-.key{
-	margin-right: 10px;
-}
-.keyArea{
-	display: inline-block;
-	vertical-align: top;
-}
-.value{
-	display: inline-block;
-}
-.newObj{
-	border: 1px solid #dddfff;
-}
-.theKey{
-	font-weight: bold;
-}
-.hidden{
-	display: none;
-}
-.delete{
-	color: red;
-}
-#fileName{
-	margin-left: 5px;
-	display: inline-block;
-}
-#title{
-	display: inline-block;
-}
-#about{
-	display: inline-block;
-	margin-left: 1%;
-}
-#save{
-	display: none;
-}
-h1, h2, h3, p{
-	font-family: "Andale Mono", "Lucida Console";
-}
-button{
-	background-color: #dddfff;
-	padding: 5px;
-	border-radius: 5px;
-}
-button:hover{
-	color: #000;
-	background-color: #fffddd;
-}
-a{
-	color: #000;
-}
-</style>
-
-<body>
-
-<h2 id='title'> basic JSON generator </h2>
-<p id='about'><a href='https://github.com/syncopika/basic-JSON-generator'> source </a></p>
-<p> generate a simple JSON file for multiple objects with any number of key-value pairs. </p>
-<p>If a value is particularly long (i.e. multiple paragraphs), no need to worry about having to type it all on one line! </p>
-
-<br>
-<p> after editing key-value pairs, press 'add object to list' to add the data as one new object to the JSON array </p>
-<button id='add' onclick='addNewPair()'>add new key-value pair </button>
-<button id='objComplete' onclick='addToJSON()'>add object to list</button>
-<button id='download' onclick='getJSON()'>download JSON file</button><input id='fileName' type='text' placeholder='type file name here' />
-
-<div id='options'>
-
-	<div class='pair'>
-		<div class='keyArea'>
-			<label> key name: </label> 
-			<input class='key' type='text'>
-		</div>
-		<textarea class='value'></textarea>
-	</div>
-	
-</div>
-
-<button id='save' class='save' onclick='saveNewData(this.id)'>save?</button>
-
-<hr>
-<h3> current objects in JSON file: </h3>
-<p> click on the 'key' to see its corresponding value </p>
-
-<div id='currentObjects'>
-</div>
+		<header class="header">
+			<h2 class="header__title" id='title'> basic JSON generator </h2>
+			<p class="header__about" id='about'><a href='https://github.com/syncopika/basic-JSON-generator' aria-label="Visit Github Repository"> Github Repository </a></p>
+		</header>
 
 
-</body>
+		<aside aria-labelledby="instructionsTitle">
+			<h1 id="instructionsTitle" class="aside__title">Instructions 📝</h1>
 
+			<ol class="aside__instructions">
+				<li><p>Generate a simple JSON file for multiple objects with any number of key-value pairs. </p></li>
+				<li><p>If a value is particularly long (i.e. multiple paragraphs), no need to worry about having to type it all on one line! </p></li>
+				<li><p>After editing key-value pairs, press <span>'add object to list'</span> to add the data as one new object to the JSON array. </p></li>
+			</ol>
 
+			<div class="aside__options" id='options' role="form" aria-labelledby="optionsTitle">
+				<h4 id="optionsTitle" class="sr-only" style="margin-bottom: 1rem;">Key-value Pair Options</h4>
+				<div class='aside__pair pair'>
+					<div class='keyArea'>
+						<label>key: </label> 
+						<input class='aside__textInput key' type='text' placeholder='key'>
+					</div>
+					<div class="valueArea">
+						<label>value: </label>
+						<input class='aside__textInput value' placeholder='value'></input>
+					</div>
+				</div>
+			</div>
+
+			<button id='save' class='save' onclick='saveNewData(this.id)'>save?</button>
+
+			<div class="aside__actions-container">
+				<button id='add' onclick='addNewPair()'>Add new key-value pair </button>
+				<button id='objComplete' onclick='addToJSON()'>Add object to list</button>
+			</div>
+		</aside>
+		
+		
+		<main>
+			<button id='download' onclick='getJSON()'>download JSON file</button>
+			<input id='fileName' type='text' placeholder='type file name here' aria-label="Enter file name"/>
+			<hr class="main__divider">
+			<h3> Current objects in JSON file: </h3>
+			<p> Click on the 'key' to see its corresponding value </p>
+
+			<div id='currentObjects' role="list" aria-label="Current Objects"></div>
+		</main>
+	</body>
 </html>
+

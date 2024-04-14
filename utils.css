@@ -1,0 +1,18 @@
+h1, h2, h3, p{
+	font-family: "Andale Mono", "Lucida Console";
+}
+button{
+	background-color: #dddfff;
+	padding: 5px;
+	border-radius: 5px;
+}
+button:hover{
+	cursor: pointer;
+	color: #000;
+	background-color: #fffddd;
+}
+span {
+	padding: .02rem .2rem;
+	color: var(--clr-light);
+	background-color: var(--clr-dark);
+}
